@@ -13,9 +13,9 @@ int position_number;
 vector<Position> position_vec;
 vector<vector<int>> position_graph;
 
-void makeGraph() {
-  for (int i = 0; i < position_vec.size(); i++) {
-    for (int j = 0; j < position_vec.size(); j++) {
+void makePositionGraph() {
+  for (int i = 0; i < position_number; i++) {
+    for (int j = 0; j < position_number; j++) {
       int x_distance = abs(position_vec[i].x - position_vec[j].x);
       int y_distance = abs(position_vec[i].y - position_vec[j].y);
       position_graph[i][j] = min(x_distance, y_distance);
@@ -24,16 +24,14 @@ void makeGraph() {
   }
 }
 
-int getDistance(int start_index, int arrival_index) {
-  if (start_index == arrival_index) {
-    return 0;
+void caclculateDistance() {
+  for (int k = 0; k < position_number; k++) {
+    for (int i = 0; i < position_number; i++) {
+      for (int j = 0; j < position_number; j++) {
+        position_graph[i][j] = min(position_graph[i][j], position_graph[i][k] + position_graph[k][j]);
+      }
+    }
   }
-
-  int distance = 0;
-  for (int i = 0; i < position_number; i++) {
-    distance += getDistance(i, arrival_index);
-  }
-  return distance;
 }
 
 int main() {
@@ -48,12 +46,13 @@ int main() {
     cin >> position_vec[i].x >> position_vec[i].y;
   }
 
-  makeGraph();
+  makePositionGraph();
+  caclculateDistance();
 
   for (int i = 0; i < question_number; i++) {
     int start, arrival, health;
     cin >> start >> arrival >> health;
-    result_vec[i] = getDistance(start - 1, arrival - 1) <= health;
+    result_vec[i] = position_graph[start - 1][arrival - 1] <= health;
   }
 
   for (bool result : result_vec) {
